@@ -68,16 +68,28 @@ public class PlayerManagerClass : UdonSharpBehaviour
         /// その他
         /// </summary>
         const int PLAYER_DEVICE_UNKNOWN = 255;
+
+    const string PLAYERDATA_KEY_INTERNAL_INDEX = "PlayerInternalIndex";
+    const string PLAYERDATA_KEY_INDEX = "PlayerIndex";
+    const string PLAYERDATA_KEY_NAME = "PlayerName";
+    const string PLAYERDATA_KEY_IS_VR = "IsUseVR";
+    const string PLAYERDATA_KEY_PLATFORM = "Platform";
+    const string PLAYERDATA_KEY_DEVICE = "DeviceType";
     #endregion
 
+    [NonSerialized]
     public DataDictionary playerDataDict = new DataDictionary()
     {
-        {"PlayerInternalIndex",0},
-        {"PlayerIndex",0 },
-        {"PlayerName","" },
-        {"IsUseVR",false},
-        {"Platform",PLAYER_PLATFORM_UNKNOWN },
-        {"DeviceType",PLAYER_DEVICE_UNKNOWN }
+        {"PlayerData",new DataDictionary()
+            {
+                {PLAYERDATA_KEY_INTERNAL_INDEX,0},
+                {PLAYERDATA_KEY_INDEX,0 },
+                {PLAYERDATA_KEY_NAME,"" },
+                {PLAYERDATA_KEY_IS_VR,false},
+                {PLAYERDATA_KEY_PLATFORM,PLAYER_PLATFORM_UNKNOWN },
+                {PLAYERDATA_KEY_DEVICE,PLAYER_DEVICE_UNKNOWN }
+            }
+        }
     };
 
 
@@ -94,6 +106,13 @@ public class PlayerManagerClass : UdonSharpBehaviour
     {
         base.OnPlayerJoined(player);
         GetPlayerInfoData(player);
+
+        DataDictionary _playerData = new DataDictionary();
+        int _internalIdx = player.playerId;
+        int _playerIdx;
+        string _playerName = player.displayName;
+        bool _isVR = player.IsUserInVR();
+
     }
     /// <summary>
     /// プレイヤーの情報を取得する
