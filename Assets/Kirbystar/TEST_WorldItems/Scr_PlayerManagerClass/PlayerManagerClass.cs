@@ -69,6 +69,7 @@ public class PlayerManagerClass : UdonSharpBehaviour
         /// </summary>
         const int PLAYER_DEVICE_UNKNOWN = 255;
 
+    const string PLAYERDATA_KEY_PLAYER_DATA = "PlayerData";
     const string PLAYERDATA_KEY_INTERNAL_INDEX = "PlayerInternalIndex";
     const string PLAYERDATA_KEY_INDEX = "PlayerIndex";
     const string PLAYERDATA_KEY_NAME = "PlayerName";
@@ -109,10 +110,16 @@ public class PlayerManagerClass : UdonSharpBehaviour
 
         DataDictionary _playerData = new DataDictionary();
         int _internalIdx = player.playerId;
-        int _playerIdx;
+        int _playerIdx=0;
         string _playerName = player.displayName;
         bool _isVR = player.IsUserInVR();
-
+        //空き枠を探す
+        DataList keys = playerDataDict.GetKeys();
+        for (int i = 0; i < keys.Count; i++)
+        {
+            DataToken key = keys[i];
+            Debug.Log(playerDataDict[key].ToString());
+        }
     }
     /// <summary>
     /// プレイヤーの情報を取得する
