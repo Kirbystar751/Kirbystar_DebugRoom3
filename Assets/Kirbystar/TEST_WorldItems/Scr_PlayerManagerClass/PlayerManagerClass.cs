@@ -113,12 +113,24 @@ public class PlayerManagerClass : UdonSharpBehaviour
         int _playerIdx=0;
         string _playerName = player.displayName;
         bool _isVR = player.IsUserInVR();
+        _playerData.SetValue(PLAYERDATA_KEY_INTERNAL_INDEX, _internalIdx);
+        _playerData.SetValue(PLAYERDATA_KEY_NAME,_playerName);
+        _playerData.SetValue(PLAYERDATA_KEY_IS_VR, _isVR);
+
+
         //空き枠を探す
-        DataList keys = playerDataDict.GetKeys();
-        for (int i = 0; i < keys.Count; i++)
+        DataList keys_pDD = playerDataDict.GetKeys();
+
+        for (int i = 0; i < keys_pDD.Count; i++)
         {
-            DataToken key = keys[i];
-            Debug.Log(playerDataDict[key].ToString());
+            DataToken key = keys_pDD[i];
+
+            DataList keys_pD = _playerData.GetKeys();
+            for (int j = 0; j < keys_pD.Count; j++)
+            {
+                DataToken key2 = keys_pD[j];
+                Debug.Log(keys_pD[j]);
+            }
         }
     }
     /// <summary>
