@@ -1,5 +1,7 @@
 ﻿
+using HarmonyLib;
 using System;
+using System.Linq;
 using System.Net.NetworkInformation;
 using UdonSharp;
 using UnityEngine;
@@ -70,6 +72,9 @@ public class PlayerManagerClass : UdonSharpBehaviour
         const int PLAYER_DEVICE_UNKNOWN = 255;
 
     const string PLAYERDATA_KEY_PLAYER_DATA = "PlayerData";
+    const string PLAYERDATA_KEY_PLAYER_DATA_INTERNAL_IDX = "PlayerData_Internal";
+    const string PLAYERDATA_KEY_PLAYER_DATA_IDX = "PlayerData_Index";
+
     const string PLAYERDATA_KEY_INTERNAL_INDEX = "PlayerInternalIndex";
     const string PLAYERDATA_KEY_INDEX = "PlayerIndex";
     const string PLAYERDATA_KEY_NAME = "PlayerName";
@@ -81,7 +86,7 @@ public class PlayerManagerClass : UdonSharpBehaviour
     [NonSerialized]
     public DataDictionary playerDataDict = new DataDictionary()
     {
-        {"PlayerData",new DataDictionary()
+        {PLAYERDATA_KEY_PLAYER_DATA,new DataDictionary()
             {
                 {PLAYERDATA_KEY_INTERNAL_INDEX,0},
                 {PLAYERDATA_KEY_INDEX,0 },
@@ -90,7 +95,9 @@ public class PlayerManagerClass : UdonSharpBehaviour
                 {PLAYERDATA_KEY_PLATFORM,PLAYER_PLATFORM_UNKNOWN },
                 {PLAYERDATA_KEY_DEVICE,PLAYER_DEVICE_UNKNOWN }
             }
-        }
+        },
+        {PLAYERDATA_KEY_PLAYER_DATA_INTERNAL_IDX,0},
+        {PLAYERDATA_KEY_PLAYER_DATA_IDX,0}
     };
 
 
@@ -116,22 +123,45 @@ public class PlayerManagerClass : UdonSharpBehaviour
         _playerData.SetValue(PLAYERDATA_KEY_INTERNAL_INDEX, _internalIdx);
         _playerData.SetValue(PLAYERDATA_KEY_NAME,_playerName);
         _playerData.SetValue(PLAYERDATA_KEY_IS_VR, _isVR);
+        _playerData.SetValue(PLAYERDATA_KEY_INDEX, 9999);//仮の値は9999
 
 
         //空き枠を探す
         DataList keys_pDD = playerDataDict.GetKeys();
-
+        //プレイヤーインデックスの一番若いのを調べるための一時的な配列
+        int[] _playerIdxs = new int[256];
+        //foreachはDataDictionaryに対しては使えないっぽい
         for (int i = 0; i < keys_pDD.Count; i++)
         {
             DataToken key = keys_pDD[i];
-
-            DataList keys_pD = _playerData.GetKeys();
-            for (int j = 0; j < keys_pD.Count; j++)
+            //型をチェックして、DataDictionary型であれば処理
+            if (playerDataDict.TryGetValue(key,out DataToken value))
             {
-                DataToken key2 = keys_pD[j];
-                Debug.Log(keys_pD[j]);
+                if (value.TokenType == TokenType.DataDictionary)
+                {
+                    DataList keys_pD = _playerData.GetKeys();
+                    for (int j = 0; j < keys_pD.Count; j++)
+                    {
+                        DataToken key2 = keys_pD[j];
+                        Debug.Log("[PlayerManager]" + keys_pD[j] + ":" + _playerData[keys_pD[j]]);
+                    }
+                    _playerIdxs[i] = _playerData[PLAYERDATA_KEY_INDEX].Int;
+                }
             }
         }
+        //一番若いプレイヤーインデックスを見つける
+        //ソートがつかえないので直す
+        Array.Sort(_playerIdxs);
+        //もし初期値のしかなかったらそいつがPlayer1
+        if (_playerIdxs[0] == 9999)
+        {
+            _playerData.SetValue(PLAYERDATA_KEY_INDEX, 1);
+        }else
+        {
+            _playerData.SetValue(PLAYERDATA_KEY_INDEX,_playerIdxs[0]+1);
+        }
+        Debug.Log("[PlayerManager]" + _playerData[PLAYERDATA_KEY_NAME] + "(InternalIDX:" + _playerData[PLAYERDATA_KEY_INTERNAL_INDEX] + ")は　Player" + _playerData[PLAYERDATA_KEY_INDEX] + "になった");
+        playerDataDict.SetValue(PLAYERDATA_KEY_PLAYER_DATA, _playerData);
     }
     /// <summary>
     /// プレイヤーの情報を取得する
