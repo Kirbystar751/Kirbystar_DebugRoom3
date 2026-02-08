@@ -7,6 +7,7 @@
 // (C) 2026 カービィ★KIRBY
 //==============================================================
 
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UdonSharp;
@@ -798,7 +799,7 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
         //重複コード
         int[] duplicateCodes = new int[] { 544, 608, 672, 800, 864, 928 };
         if (960 <= ccode && ccode <= 991) return ccode - 256;
-        else if (duplicateCodes.Contains(ccode)) return ccode - 32;
+        else if (Array.IndexOf(duplicateCodes,ccode)!=0 ) return ccode - 32;
         else return ccode;
     }
 }

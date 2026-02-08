@@ -157,7 +157,7 @@ public class PlayerManagerClass : UdonSharpBehaviour
         }
         //一番若いプレイヤーインデックスを見つける
         //ソートがつかえないので直す
-        Array.Sort(_playerIdxs);
+        //Array.Sort(_playerIdxs);
         //もし初期値のしかなかったらそいつがPlayer1
         if (_playerIdxs[0] == 9999)
         {
