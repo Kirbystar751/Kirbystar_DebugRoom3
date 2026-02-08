@@ -1,6 +1,6 @@
 ﻿//==============================================================
 // SGB カラーシミュレータ コアスクリプト For VRChat Udon
-// Ver.0.0.2b
+// Ver.0.0.3b
 // 
 // -- データをぶっ飛ばしてしまったので作り直し --
 // -- Gitの操作には気を付けてくださいね！！！！--
@@ -739,23 +739,25 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
 
             if (cc <= 511)
             {
-                Debug.Log(logPrefix + "カラーコード" + cc + "は通常カラー");
-                if (SGBNormalColorTable.TryGetValue(cc, out DataToken colorValue))
+                Debug.Log(logPrefix + "カラーコード" + c[cloop] + "は通常カラー");
+
+                if(SGBNormalColorTable.TryGetValue(cc,out DataToken value))
                 {
-                    resColor[cloop] = colorValue.ToString();
-                    Debug.Log(logPrefix + "カラーコード" + cc + "の色は<color=" + resColor[cloop] + ">" + resColor[cloop] + "</color>");
+                    resColor[cloop] = value.ToString();
                 }
+                Debug.Log(logPrefix + "カラーコード" + c[cloop] + "の色は<color=" + resColor[cloop] + ">" + resColor[cloop] + "</color>");
+
             }
             if (cc >= 512)
             {
-                Debug.Log(logPrefix + "カラーコード" + cc + "はプリセットカラー");
+                Debug.Log(logPrefix + "カラーコード" + c[cloop] + "はプリセットカラー");
                 if (SGBPresetColorTable.TryGetValue(cc, out DataToken colorValue))
                 {
                     resColor[cloop] = colorValue.ToString();
                     //プリセットカラーの場合は４つに分ける
                     string[] spritedColor = resColor[cloop].Split(',');
                     resColor[cloop] = spritedColor[cloop];
-                    Debug.Log(logPrefix + "カラーコード" + cc + "の色は<color=" + resColor[cloop] + ">" + resColor[cloop] + "</color>");
+                    Debug.Log(logPrefix + "カラーコード" + c[cloop] + "の色は<color=" + resColor[cloop] + ">" + resColor[cloop] + "</color>");
                 }
             }
         }
@@ -783,9 +785,11 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
         {
             if (deadRanges[i] <= ccode && ccode <= deadRanges[i + 1])
             {
+                Debug.Log(logPrefix + "カラーコード" + ccode + "はDEADなので704にする");
                 return 704;
             }
         }
+        Debug.Log(logPrefix + "カラーコード" + ccode + "はDEADじゃないのでそのまま");
         return ccode;
     }
 
@@ -798,8 +802,16 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
     {
         //重複コード
         int[] duplicateCodes = new int[] { 544, 608, 672, 800, 864, 928 };
-        if (960 <= ccode && ccode <= 991) return ccode - 256;
-        else if (Array.IndexOf(duplicateCodes,ccode)!=0 ) return ccode - 32;
+        if (960 <= ccode && ccode <= 991)
+        {
+            Debug.Log(logPrefix + "カラーコード" + ccode + "は重複値なので256ひいて" + (ccode - 256) + "にする");
+            return ccode - 256;
+        }
+        else if (Array.IndexOf(duplicateCodes, ccode) != -1)
+        {
+            Debug.Log(logPrefix + "カラーコード" + ccode + "は重複値なので32ひいて" + (ccode - 32) + "にする");
+            return ccode - 32;
+        }
         else return ccode;
     }
 }
