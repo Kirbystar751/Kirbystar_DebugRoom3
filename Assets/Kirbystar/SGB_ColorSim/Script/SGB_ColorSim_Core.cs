@@ -686,13 +686,18 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
 
 
     public string SGBPassword = "7047-0470-4704";
+    public string SGBReturnColors = "";
+
     void Start()
     {
 
     }
-    public void testPass2Color()
+
+    public void ev_Pass2Color()
     {
         string colors = Pass2Color(SGBPassword);
+        SGBReturnColors = colors;
+
         Debug.Log(logPrefix + "テスト用Pass2Colorの結果: " + colors);
     }
 
