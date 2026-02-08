@@ -1,6 +1,6 @@
 ﻿//==============================================================
 // SGB カラーシミュレータ コアスクリプト For VRChat Udon
-// Ver.0.0.1b
+// Ver.0.0.2b
 // 
 // -- データをぶっ飛ばしてしまったので作り直し --
 // -- Gitの操作には気を付けてくださいね！！！！--
@@ -683,9 +683,16 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
         { 927, "#3F3830,#2F3010,#202010,#10100F" }
     };
 
+
+    public string SGBPassword = "7047-0470-4704";
     void Start()
     {
 
+    }
+    public void testPass2Color()
+    {
+        string colors = Pass2Color(SGBPassword);
+        Debug.Log(logPrefix + "テスト用Pass2Colorの結果: " + colors);
     }
 
     /// <summary>
@@ -726,11 +733,39 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
         }
         for (int cloop = 0; cloop <= 3; cloop++)
         {
-            Debug.Log(logPrefix +  cloop + "回目の処理をはじめます");
+            Debug.Log(logPrefix + cloop + "回目の処理をはじめます");
             int cc = DuplicateCheck(DeadCheck(c[cloop]));
 
+            if (cc <= 511)
+            {
+                Debug.Log(logPrefix + "カラーコード" + cc + "は通常カラー");
+                if (SGBNormalColorTable.TryGetValue(cc, out DataToken colorValue))
+                {
+                    resColor[cloop] = colorValue.ToString();
+                    Debug.Log(logPrefix + "カラーコード" + cc + "の色は<color=" + resColor[cloop] + ">" + resColor[cloop] + "</color>");
+                }
+            }
+            if (cc >= 512)
+            {
+                Debug.Log(logPrefix + "カラーコード" + cc + "はプリセットカラー");
+                if (SGBPresetColorTable.TryGetValue(cc, out DataToken colorValue))
+                {
+                    resColor[cloop] = colorValue.ToString();
+                    //プリセットカラーの場合は４つに分ける
+                    string[] spritedColor = resColor[cloop].Split(',');
+                    resColor[cloop] = spritedColor[cloop];
+                    Debug.Log(logPrefix + "カラーコード" + cc + "の色は<color=" + resColor[cloop] + ">" + resColor[cloop] + "</color>");
+                }
+            }
         }
-
+        //結果をまとめて返す
+        resultColors = string.Join(",", resColor);
+        Debug.Log(logPrefix + "最終的な結果は" + resultColors +
+            "\n<color=" + resColor[0] + ">c0:" + resColor[0] + "</color>" +
+            "\n<color=" + resColor[1] + ">c0:" + resColor[1] + "</color>" +
+            "\n<color=" + resColor[2] + ">c0:" + resColor[2] + "</color>" +
+            "\n<color=" + resColor[3] + ">c0:" + resColor[3] + "</color>");
+        return resultColors;
     }
 
     /// <summary>
