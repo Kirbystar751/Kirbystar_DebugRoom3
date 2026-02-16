@@ -16,7 +16,9 @@ public class SGB_ColorSim_ColorBinController : UdonSharpBehaviour
     //絵の具のビンのページ（横に置いてあるパレットをUseで切り替え、1～5ページまである）
     public int ColorBinIndex = 0;
 
-    public GameObject[] ColorBins = new GameObject[12]; //絵の具のビンのGameObjectを格納する配列
+    public SGB_ColorSim_ColorBin[] ColorBins = new SGB_ColorSim_ColorBin[12]; //絵の具のビンのGameObjectを格納する配列
+    [SerializeField] public AudioClip BinChangeSound;
+    AudioSource Sound;
 
     //SGBマイカラー画面でのパレット配列
     //５２色あります　白と黒はどのパレットでも共通
@@ -36,6 +38,23 @@ public class SGB_ColorSim_ColorBinController : UdonSharpBehaviour
     void Start()
     {
         ColorBinChange();
+        Sound = GetComponent<AudioSource>();
+    }
+
+    public override void Interact()
+    {
+        NextColorBin();
+        Sound.PlayOneShot(BinChangeSound);
+    }
+
+    public void NextColorBin()
+    {
+        ColorBinIndex++;
+        if (ColorBinIndex > 4)
+        {
+            ColorBinIndex = 0;
+        }
+        ColorBinChange();
     }
 
     public void ColorBinChange()
@@ -48,6 +67,9 @@ public class SGB_ColorSim_ColorBinController : UdonSharpBehaviour
                     GameObject colorObj = ColorBins[i].transform.Find("Color").gameObject;
                     TryParseHexColor(sgbCore.SGBNormalColorTable[colorBinPallete1[i]].String, out Color color);
                     colorObj.GetComponent<Renderer>().material.color = color;
+                    ColorBins[i].binColor = color;
+                    ColorBins[i].binColorCode = colorBinPallete1[i];
+                    ColorBins[i].isColorChanged = true;
                 }
                 break;
             case 1:
@@ -56,6 +78,9 @@ public class SGB_ColorSim_ColorBinController : UdonSharpBehaviour
                     GameObject colorObj = ColorBins[i].transform.Find("Color").gameObject;
                     TryParseHexColor(sgbCore.SGBNormalColorTable[colorBinPallete2[i]].String, out Color color);
                     colorObj.GetComponent<Renderer>().material.color = color;
+                    ColorBins[i].binColor = color;
+                    ColorBins[i].binColorCode = colorBinPallete2[i];
+                    ColorBins[i].isColorChanged = true;
                 }
                 break;
             case 2:
@@ -64,6 +89,9 @@ public class SGB_ColorSim_ColorBinController : UdonSharpBehaviour
                     GameObject colorObj = ColorBins[i].transform.Find("Color").gameObject;
                     TryParseHexColor(sgbCore.SGBNormalColorTable[colorBinPallete3[i]].String, out Color color);
                     colorObj.GetComponent<Renderer>().material.color = color;
+                    ColorBins[i].binColor = color;
+                    ColorBins[i].binColorCode = colorBinPallete3[i];
+                    ColorBins[i].isColorChanged = true;
                 }
                 break;
             case 3:
@@ -72,6 +100,9 @@ public class SGB_ColorSim_ColorBinController : UdonSharpBehaviour
                     GameObject colorObj = ColorBins[i].transform.Find("Color").gameObject;
                     TryParseHexColor(sgbCore.SGBNormalColorTable[colorBinPallete4[i]].String, out Color color);
                     colorObj.GetComponent<Renderer>().material.color = color;
+                    ColorBins[i].binColor = color;
+                    ColorBins[i].binColorCode = colorBinPallete4[i];
+                    ColorBins[i].isColorChanged = true;
                 }
                 break;
             case 4:
@@ -80,6 +111,9 @@ public class SGB_ColorSim_ColorBinController : UdonSharpBehaviour
                     GameObject colorObj = ColorBins[i].transform.Find("Color").gameObject;
                     TryParseHexColor(sgbCore.SGBNormalColorTable[colorBinPallete5[i]].String, out Color color);
                     colorObj.GetComponent<Renderer>().material.color = color;
+                    ColorBins[i].binColor = color;
+                    ColorBins[i].binColorCode = colorBinPallete5[i];
+                    ColorBins[i].isColorChanged = true;
                 }
                 break;
             default:

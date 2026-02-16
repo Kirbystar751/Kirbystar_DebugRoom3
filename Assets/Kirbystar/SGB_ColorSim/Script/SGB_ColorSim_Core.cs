@@ -15,6 +15,7 @@ using UnityEngine;
 using VRC.SDK3.Data;
 using VRC.SDKBase;
 using VRC.Udon;
+using VRC.Udon.Serialization.OdinSerializer.Utilities;
 
 public class SGB_ColorSim_Core : UdonSharpBehaviour
 {
@@ -26,7 +27,7 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
     /// <summary>
     /// 通常カラーテーブル
     /// </summary>
-    DataDictionary SGBNormalColorTable = new DataDictionary()
+    public DataDictionary SGBNormalColorTable = new DataDictionary()
     {
         { 0, "#FFC0C0" },
         { 1, "#FFD0FF" },
@@ -456,7 +457,7 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
     /// <summary>
     /// プリセットカラーテーブル
     /// </summary>
-    DataDictionary SGBPresetColorTable = new DataDictionary()
+    public DataDictionary SGBPresetColorTable = new DataDictionary()
     {
         { 704, "#FFE8CF,#DF904F,#AF2820,#301850" },
         { 640, "#FFF8E0,#E0B080,#CF686F,#6F5080" },
@@ -684,13 +685,11 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
         { 927, "#3F3830,#2F3010,#202010,#10100F" }
     };
 
-
     public string SGBPassword = "7047-0470-4704";
     public string SGBReturnColors = "";
 
     void Start()
     {
-
     }
 
     public void ev_Pass2Color()
@@ -699,6 +698,14 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
         SGBReturnColors = colors;
 
         Debug.Log(logPrefix + "テスト用Pass2Colorの結果: " + colors);
+    }
+
+    public void SetPassword(string pass)
+    {
+        Debug.Log(logPrefix + "SetPasswordをはじめます");
+        SGBPassword = pass;
+        SendCustomEvent("ev_Pass2Color");
+
     }
 
     /// <summary>
@@ -819,4 +826,116 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
         }
         else return ccode;
     }
+
+    /// <summary>
+    /// 色を明るくする
+    /// </summary>
+    /// <param name="index">明るくしたい色(0～3で選択)</param>
+    public void ColorLight(int index)
+    {
+        Debug.Log(logPrefix + "ColorLightをはじめます　明るくする色のインデックスは" + index);
+        string password = SGBPassword;
+        //xxxx-xxxx-xxxx型ならまずハイフンを取る
+        password = password.Replace("-", "");
+        int[] c = new int[4];
+        //4つに分ける
+        c[0] = int.Parse(password.Substring(0, 3));
+        c[1] = int.Parse(password.Substring(3, 3));
+        c[2] = int.Parse(password.Substring(6, 3));
+        c[3] = int.Parse(password.Substring(9, 3));
+        Debug.Log(logPrefix + "4つにわけました" +
+            "\nc0:" + c[0] +
+            "\nc1:" + c[1] +
+            "\nc2:" + c[2] +
+            "\nc3:" + c[3]);
+
+        //値が有効なのか確認してから（範囲外になるようであればキャンセル）
+        //プリセットカラー値の場合は５１２を引けばサイクル数を確認できる
+        int cycle;
+        if (c[index] >= 512)
+        {
+            cycle = (c[index] - 512) / 64;
+            Debug.Log(logPrefix + "ColorDark カラーコード" + c[index] + "はプリセットカラーなので512引いて、明るさサイクルの" + cycle + "段階目です");
+        }
+        else
+        {
+            cycle = c[index] / 64;
+            Debug.Log(logPrefix + "ColorDark カラーコード" + c[index] + "は明るさサイクルの" + cycle + "段階目です");
+        }
+
+        Debug.Log(logPrefix + "ColorDark カラーコード" + c[index] + "は明るさサイクルの" + cycle + "段階目です");
+        if ((cycle > 0))
+        {
+            //明るくするには64を引く
+            c[index] -= 64;
+            Debug.Log(logPrefix + "ColorLight １段階明るくした");
+        }
+        else
+        {
+            Debug.Log(logPrefix + "ColorLight これ以上明るくできないので処理しませんでした");
+        }
+
+        string rawpass = c[0].ToString("D3") + c[1].ToString("D3") + c[2].ToString("D3") + c[3].ToString("D3");
+        //またハイフンを入れる
+        string newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
+        SGBPassword = newpass;
+        Debug.Log(logPrefix + "ColorLight 新しいパスワードは" + SGBPassword);
+
+    }
+
+    /// <summary>
+    /// 色を暗くする
+    /// </summary>
+    /// <param name="index">暗くしたい色(0～3で選択)</param>
+    public void ColorDark(int index)
+    {
+        Debug.Log(logPrefix + "ColorDarkをはじめます　暗くする色のインデックスは" + index);
+        string password = SGBPassword;
+        //xxxx-xxxx-xxxx型ならまずハイフンを取る
+        password = password.Replace("-", "");
+        int[] c = new int[4];
+        //4つに分ける
+        c[0] = int.Parse(password.Substring(0, 3));
+        c[1] = int.Parse(password.Substring(3, 3));
+        c[2] = int.Parse(password.Substring(6, 3));
+        c[3] = int.Parse(password.Substring(9, 3));
+        Debug.Log(logPrefix + "4つにわけました" +
+            "\nc0:" + c[0] +
+            "\nc1:" + c[1] +
+            "\nc2:" + c[2] +
+            "\nc3:" + c[3]);
+
+        //値が有効なのか確認してから（範囲外になるようであればキャンセル）
+        //プリセットカラー値の場合は５１２を引けばサイクル数を確認できる
+        int cycle;
+        if (c[index] >= 512)
+        {
+            cycle = (c[index] - 512) / 64;
+            Debug.Log(logPrefix + "ColorDark カラーコード" + c[index] + "はプリセットカラーなので512引いて、明るさサイクルの" + cycle + "段階目です");
+        }
+        else
+        {
+            cycle = c[index] / 64;
+            Debug.Log(logPrefix + "ColorDark カラーコード" + c[index] + "は明るさサイクルの" + cycle + "段階目です");
+        }
+
+        if ((cycle < 6))
+        {
+            //暗くするには64を足す
+            c[index] += 64;
+            Debug.Log(logPrefix + "ColorDark １段階暗くした");
+        }
+        else
+        {
+            Debug.Log(logPrefix + "ColorDark これ以上暗くくできないので処理しませんでした");
+        }
+
+        string rawpass = c[0].ToString("D3") + c[1].ToString("D3") + c[2].ToString("D3") + c[3].ToString("D3");
+        //またハイフンを入れる
+        string newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
+        SGBPassword = newpass;
+        Debug.Log(logPrefix + "ColorDark 新しいパスワードは" + SGBPassword);
+
+    }
+
 }

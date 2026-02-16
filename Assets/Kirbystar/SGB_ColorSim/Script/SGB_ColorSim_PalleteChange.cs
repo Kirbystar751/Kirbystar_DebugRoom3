@@ -6,6 +6,7 @@ using VRC.Udon;
 
 public class SGB_ColorSim_PalleteChange : UdonSharpBehaviour
 {
+    
     void Start()
     {
         

@@ -19,18 +19,25 @@ public class SGB_ColorSim_TestInterFace : UdonSharpBehaviour
     // ログ用プレフィックス
     const string logPrefix = "<color=" + logColorCode + ">[SGB ColorSim Interface]</color>";
 
-    [SerializeField] public InputField passwordField;
     [SerializeField] public SGB_ColorSim_Core core;
     [SerializeField] public GameObject[] colorBoxs = new GameObject[4];
+    [SerializeField] public GameObject passwordDisp;
+    [SerializeField] public GameObject[] passInputterText = new GameObject[14];
+    Text passDispText;
+
+    //同期マネージャ
+    [SerializeField] SGB_ColorSim_SyncManager syncManager;
+
     void Start()
     {
-        passwordField.GetComponent<UnityEngine.UI.InputField>();
+        passDispText = passwordDisp.GetComponent<Text>();
+        colorBoxColorChange();
     }
 
     public void testButtonPress()
     {
         Debug.Log(logPrefix + "testButtonPress()が呼ばれた");
-        core.SGBPassword = passwordField.text;
+        //if (core.SGBPassword != null) { core.SGBPassword = passwordField.text; }
         core.SendCustomEvent("ev_Pass2Color");
         string colors_Sonomama = core.SGBReturnColors;
         string[] colors = colors_Sonomama.Split(',');
@@ -44,6 +51,26 @@ public class SGB_ColorSim_TestInterFace : UdonSharpBehaviour
         }
     }
 
+    public void colorBoxColorChange()
+    {
+        Debug.Log(logPrefix + "colorBoxColorChange()が呼ばれた");
+        core.SendCustomEvent("ev_Pass2Color");
+        string colors_Sonomama = core.SGBReturnColors;
+        string[] colors = colors_Sonomama.Split(',');
+
+        for (int i = 0; i < 4; i++)
+        {
+            if (TryParseHexColor(colors[i], out Color color))
+            {
+                colorBoxs[i].GetComponent<Renderer>().material.color = color;
+            }
+        }
+        passDispText.text = core.SGBPassword;
+        for (int i = 0; i <= 13; i++)
+        {
+            passInputterText[i].GetComponent<Text>().text = core.SGBPassword.Substring(i, 1);
+        }
+    }
     /// <summary>
     /// TryParseHTMLStringの自前実装版
     /// </summary>
