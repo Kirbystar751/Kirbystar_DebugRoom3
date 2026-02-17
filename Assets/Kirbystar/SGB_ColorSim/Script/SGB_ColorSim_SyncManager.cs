@@ -35,7 +35,9 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
             Networking.SetOwner(Networking.LocalPlayer, this.gameObject);
         }
         syncPassword = core.SGBPassword;
+        Debug.Log(logPrefix + "syncPasswordを" +  syncPassword + "に書き換えた");
         RequestSerialization();
+        Debug.Log(logPrefix + "同期要求を飛ばしました") ; 
     }
 
     /// <summary>

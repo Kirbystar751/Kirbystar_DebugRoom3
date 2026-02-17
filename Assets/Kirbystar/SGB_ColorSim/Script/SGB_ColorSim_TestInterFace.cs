@@ -69,6 +69,7 @@ public class SGB_ColorSim_TestInterFace : UdonSharpBehaviour
         {
             passInputterText[i].GetComponent<Text>().text = core.SGBPassword.Substring(i, 1);
         }
+        
     }
     /// <summary>
     /// TryParseHTMLStringの自前実装版
