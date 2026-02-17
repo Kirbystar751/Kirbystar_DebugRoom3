@@ -688,8 +688,11 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
     public string SGBPassword = "7047-0470-4704";
     public string SGBReturnColors = "";
 
+    [SerializeField] public SGB_ColorSim_SyncManager SyncManager;
+
     void Start()
     {
+        SyncManager.syncPassword = SGBPassword;
     }
 
     public void ev_Pass2Color()
@@ -704,6 +707,8 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
     {
         Debug.Log(logPrefix + "SetPasswordをはじめます");
         SGBPassword = pass;
+        SyncManager.syncPassword = SGBPassword;
+        SyncManager.SetPassword();
         SendCustomEvent("ev_Pass2Color");
 
     }
@@ -878,7 +883,8 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
         string rawpass = c[0].ToString("D3") + c[1].ToString("D3") + c[2].ToString("D3") + c[3].ToString("D3");
         //またハイフンを入れる
         string newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
-        SGBPassword = newpass;
+        //SGBPassword = newpass;
+        SetPassword(newpass);
         Debug.Log(logPrefix + "ColorLight 新しいパスワードは" + SGBPassword);
 
     }
@@ -933,7 +939,8 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
         string rawpass = c[0].ToString("D3") + c[1].ToString("D3") + c[2].ToString("D3") + c[3].ToString("D3");
         //またハイフンを入れる
         string newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
-        SGBPassword = newpass;
+        //SGBPassword = newpass;
+        SetPassword(newpass);
         Debug.Log(logPrefix + "ColorDark 新しいパスワードは" + SGBPassword);
 
     }

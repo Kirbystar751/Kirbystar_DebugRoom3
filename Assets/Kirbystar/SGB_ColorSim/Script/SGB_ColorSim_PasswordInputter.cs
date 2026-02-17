@@ -46,7 +46,8 @@ public class SGB_ColorSim_PasswordInputter : UdonSharpBehaviour
             int currentNum = int.Parse(currentPass.Substring(interactedObj, 1));
             int nextNum = (currentNum + 1) % 10;
             currentPass = currentPass.Remove(interactedObj, 1).Insert(interactedObj, nextNum.ToString());
-            core.SGBPassword = currentPass;
+            //core.SGBPassword = currentPass;
+            core.SetPassword(currentPass);
             interFace.colorBoxColorChange();
         }
     }

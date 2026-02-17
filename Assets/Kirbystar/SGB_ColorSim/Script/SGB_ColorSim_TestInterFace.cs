@@ -23,15 +23,13 @@ public class SGB_ColorSim_TestInterFace : UdonSharpBehaviour
     [SerializeField] public GameObject[] colorBoxs = new GameObject[4];
     [SerializeField] public GameObject passwordDisp;
     [SerializeField] public GameObject[] passInputterText = new GameObject[14];
-    Text passDispText;
 
-    //同期マネージャ
-    [SerializeField] SGB_ColorSim_SyncManager syncManager;
+    Text passDispText;
 
     void Start()
     {
         passDispText = passwordDisp.GetComponent<Text>();
-        colorBoxColorChange();
+        //colorBoxColorChange();
     }
 
     public void testButtonPress()
@@ -54,7 +52,8 @@ public class SGB_ColorSim_TestInterFace : UdonSharpBehaviour
     public void colorBoxColorChange()
     {
         Debug.Log(logPrefix + "colorBoxColorChange()が呼ばれた");
-        core.SendCustomEvent("ev_Pass2Color");
+        //core.SendCustomEvent("ev_Pass2Color");
+        core.SGBReturnColors = core.Pass2Color(core.SGBPassword);
         string colors_Sonomama = core.SGBReturnColors;
         string[] colors = colors_Sonomama.Split(',');
 

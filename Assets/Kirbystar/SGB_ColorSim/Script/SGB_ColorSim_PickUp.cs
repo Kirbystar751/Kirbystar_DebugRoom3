@@ -142,7 +142,8 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                             rawpass = rawpass.Remove(0, 3).Insert(0, colorCode.ToString("D3"));
                             //またハイフンを入れる
                             newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
-                            core.SGBPassword = newpass;
+                            //core.SGBPassword = newpass;
+                            core.SetPassword(newpass);
                             break;
                         case 2:
                             //最初に、ハイフンを取る
@@ -151,7 +152,8 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                             rawpass = rawpass.Remove(3, 3).Insert(3, colorCode.ToString("D3"));
                             //またハイフンを入れる
                             newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
-                            core.SGBPassword = newpass;
+                            //core.SGBPassword = newpass;
+                            core.SetPassword(newpass);
                             break;
                         case 3:
                             //最初に、ハイフンを取る
@@ -160,7 +162,8 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                             rawpass = rawpass.Remove(6, 3).Insert(6, colorCode.ToString("D3"));
                             //またハイフンを入れる
                             newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
-                            core.SGBPassword = newpass;
+                            //core.SGBPassword = newpass;
+                            core.SetPassword(newpass);
                             break;
                         case 4:
                             //最初に、ハイフンを取る
@@ -169,7 +172,8 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                             rawpass = rawpass.Remove(9, 3).Insert(9, colorCode.ToString("D3"));
                             //またハイフンを入れる
                             newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
-                            core.SGBPassword = newpass;
+                            //core.SGBPassword = newpass;
+                            core.SetPassword(newpass);
                             break;
                         default:
                             break;
