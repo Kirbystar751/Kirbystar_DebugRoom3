@@ -4,53 +4,54 @@ using VRC.SDKBase;
 
 public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
 {
-    // ログ用カラーコード
     const string logColorCode = "#FF0080";
-
-    // ログ用プレフィックス
     const string logPrefix = "<color=" + logColorCode + ">[SGB ColorSim SyncManager]</color>";
 
     [SerializeField] private SGB_ColorSim_Core core;
     [SerializeField] private SGB_ColorSim_TestInterFace interfaceUI;
-    //[SerializeField] private string bPass;
-    [UdonSynced, FieldChangeCallback(nameof(syncPassword))] public string syncPass;
 
-    //Todo:今のままだとあとから来た人の動作が暴走する
-    //この頃同期がドーキドキ
+    [UdonSynced] public string syncPass;
 
-
-    public string syncPassword
+    public void SetPassword(string newPass)
     {
-        set { syncPass = value; SyncPassChange(); Debug.Log(logPrefix + "受けたパスワードは" + value); }
-        get => syncPass;
-    }
-
-    public void SetPassword()
-    {
-        Debug.Log(logPrefix + "SyncPassword()");
-        //オブジェクトオーナー取得
-        if (!Networking.LocalPlayer.IsOwner(this.gameObject))
+        if (!Networking.IsOwner(gameObject))
         {
-            Debug.Log(logPrefix + "オブジェクトのオーナーではないため、オーナーに変更します");
-            Networking.SetOwner(Networking.LocalPlayer, this.gameObject);
+            Networking.SetOwner(Networking.LocalPlayer, gameObject);
         }
-        syncPassword = core.SGBPassword;
-        Debug.Log(logPrefix + "syncPasswordを" +  syncPassword + "に書き換えた");
+
+        syncPass = newPass;
+
         RequestSerialization();
-        Debug.Log(logPrefix + "同期要求を飛ばしました") ; 
+
+        ApplyState(); // ローカル即時反映
     }
 
-    /// <summary>
-    /// 同期用のパスワードが変更されたときの処理
-    /// </summary>
-    private void SyncPassChange()
+    public void ColorLight(int index)
     {
-        Debug.Log(logPrefix + "SyncPassChange()");
-        interfaceUI.colorBoxColorChange();
+        core.ColorLight(index);
+        syncPass = core.SGBPassword;
+        RequestSerialization();
+        ApplyState();
+    }
+
+    public void ColorDark(int index)
+    {
+        core.ColorLight(index);
+        syncPass = core.SGBPassword;
+        RequestSerialization();
+        ApplyState();
     }
 
     public override void OnDeserialization()
     {
-        base.OnDeserialization();
+        ApplyState(); // 同期受信時反映
+    }
+
+    private void ApplyState()
+    {
+        Debug.Log(logPrefix + "ApplyState() syncPass = " + syncPass);
+
+        core.SetPassword(syncPass);
+        interfaceUI.colorBoxColorChange();
     }
 }

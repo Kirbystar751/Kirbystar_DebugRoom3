@@ -692,7 +692,7 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
 
     void Start()
     {
-        SyncManager.syncPassword = SGBPassword;
+        SyncManager.SetPassword(SGBPassword);
     }
 
     public void ev_Pass2Color()
@@ -707,8 +707,6 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
     {
         Debug.Log(logPrefix + "SetPasswordをはじめます");
         SGBPassword = pass;
-        SyncManager.syncPassword = SGBPassword;
-        SyncManager.SetPassword();
         SendCustomEvent("ev_Pass2Color");
 
     }

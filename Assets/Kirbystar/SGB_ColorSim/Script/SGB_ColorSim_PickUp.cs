@@ -17,7 +17,7 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
     [SerializeField]SGB_ColorSim_Core core;
     [SerializeField] ParticleSystem particle;
     [SerializeField]SGB_ColorSim_TestInterFace testInterface;
-    
+    [SerializeField]SGB_ColorSim_SyncManager syncManager;
     [SerializeField] AudioClip grabSound;
     [SerializeField] AudioClip releaseSound;
     [SerializeField] AudioClip setSound;
@@ -143,7 +143,8 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                             //またハイフンを入れる
                             newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
                             //core.SGBPassword = newpass;
-                            core.SetPassword(newpass);
+                            //core.SetPassword(newpass);
+                            syncManager.SetPassword(newpass);
                             break;
                         case 2:
                             //最初に、ハイフンを取る
@@ -153,7 +154,9 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                             //またハイフンを入れる
                             newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
                             //core.SGBPassword = newpass;
-                            core.SetPassword(newpass);
+                            //core.SetPassword(newpass);
+                            syncManager.SetPassword(newpass);
+
                             break;
                         case 3:
                             //最初に、ハイフンを取る
@@ -163,7 +166,8 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                             //またハイフンを入れる
                             newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
                             //core.SGBPassword = newpass;
-                            core.SetPassword(newpass);
+                            //core.SetPassword(newpass);
+                            syncManager.SetPassword(newpass);
                             break;
                         case 4:
                             //最初に、ハイフンを取る
@@ -173,7 +177,8 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                             //またハイフンを入れる
                             newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
                             //core.SGBPassword = newpass;
-                            core.SetPassword(newpass);
+                            //core.SetPassword(newpass);
+                            syncManager.SetPassword(newpass);
                             break;
                         default:
                             break;
