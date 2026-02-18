@@ -36,7 +36,7 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
 
     public void ColorDark(int index)
     {
-        core.ColorLight(index);
+        core.ColorDark(index);
         syncPass = core.SGBPassword;
         RequestSerialization();
         ApplyState();
