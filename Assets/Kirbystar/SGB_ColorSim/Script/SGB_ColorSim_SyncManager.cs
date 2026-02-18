@@ -13,7 +13,7 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
     [SerializeField] private SGB_ColorSim_Core core;
     [SerializeField] private SGB_ColorSim_TestInterFace interfaceUI;
     //[SerializeField] private string bPass;
-    [UdonSynced, FieldChangeCallback(nameof(syncPassword))] private string syncPass;
+    [UdonSynced, FieldChangeCallback(nameof(syncPassword))] public string syncPass;
 
     //Todo:今のままだとあとから来た人の動作が暴走する
     //この頃同期がドーキドキ
@@ -47,5 +47,10 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
     {
         Debug.Log(logPrefix + "SyncPassChange()");
         interfaceUI.colorBoxColorChange();
+    }
+
+    public override void OnDeserialization()
+    {
+        base.OnDeserialization();
     }
 }
