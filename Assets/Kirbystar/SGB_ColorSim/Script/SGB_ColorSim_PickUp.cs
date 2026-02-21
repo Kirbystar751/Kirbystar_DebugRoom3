@@ -34,6 +34,10 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
     int colorCode;
     bool isInColorBox = false;
 
+    //つかんだ当初のカラーコードと色（この情報を使って更新する）
+    int grab_ColorCode;
+    Color grab_Color;
+
     void Start()
     {
         Color c = parent.binColor;
@@ -65,13 +69,6 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
     public void palleteColorChange()
     {
         Debug.Log(logPrefix + "パレットの色変更がかかった");
-        Color c = parent.binColor;
-        colorCode = parent.binColorCode;
-        GetComponent<MeshRenderer>().material.color = c;
-        Debug.Log(logPrefix + this.gameObject.name + "の色は" + c + "、Code:" + colorCode);
-
-        ParticleSystem.MainModule main = particle.main;
-        main.startColor = c;
     }
     /// <summary>
     /// つかまれた時に発生
@@ -83,6 +80,15 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
         sound.PlayOneShot(grabSound);
         //もう片手でつかめないようにする
         this.GetComponent<VRC_Pickup>().pickupable = false;
+
+        //つかんだ時の色を反映
+        Color c = parent.binColor;
+        colorCode = parent.binColorCode;
+        GetComponent<MeshRenderer>().material.color = c;
+        Debug.Log(logPrefix + this.gameObject.name + "の色は" + c + "、Code:" + colorCode);
+
+        ParticleSystem.MainModule main = particle.main;
+        main.startColor = c;
     }
     /// <summary>
     /// 離したときに発生
