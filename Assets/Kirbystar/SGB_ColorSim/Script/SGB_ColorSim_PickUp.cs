@@ -81,6 +81,8 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
         Debug.Log(logPrefix + "つかみました");
         this.GetComponent<MeshRenderer>().enabled = true;
         sound.PlayOneShot(grabSound);
+        //もう片手でつかめないようにする
+        this.GetComponent<VRC_Pickup>().pickupable = false;
     }
     /// <summary>
     /// 離したときに発生
@@ -98,6 +100,8 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
             this.GetComponent<MeshRenderer>().enabled = false;
             this.gameObject.transform.position = initialPos;
             this.gameObject.transform.rotation = initialRot;
+            //つかめる状態を戻す
+            this.GetComponent<VRC_Pickup>().pickupable = true;
         }
     }
 
@@ -194,7 +198,9 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                     this.GetComponent<MeshRenderer>().enabled = false;
                     this.gameObject.transform.position = initialPos;
                     this.gameObject.transform.rotation = initialRot;
-                    isInColorBox = false; 
+                    isInColorBox = false;
+                    //つかめる状態を戻す
+                    this.GetComponent<VRC_Pickup>().pickupable = true;
                 }
             }
         }
