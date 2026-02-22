@@ -49,6 +49,7 @@ public class SGB_ColorSim_PasswordInputter : UdonSharpBehaviour
             currentPass = currentPass.Remove(interactedObj, 1).Insert(interactedObj, nextNum.ToString());
             //core.SGBPassword = currentPass;
             //core.SetPassword(currentPass);
+            syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_PASSWORD;
             syncManager.SetPassword(currentPass);
 
             interFace.colorBoxColorChange();

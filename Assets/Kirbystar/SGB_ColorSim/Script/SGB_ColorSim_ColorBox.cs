@@ -50,6 +50,7 @@ public class SGB_ColorSim_ColorBox : UdonSharpBehaviour
             Debug.Log(logPrefix + "白絵の具が当たった");
             sound.PlayOneShot(LightSound);
             int thisBox = int.Parse(this.gameObject.transform.parent.gameObject.name.Substring(9)) - 1;
+            syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_COLOR_LIGHT;
             syncManager.ColorLight(thisBox);
             //testInterface.colorBoxColorChange();
             return;
@@ -59,6 +60,7 @@ public class SGB_ColorSim_ColorBox : UdonSharpBehaviour
             Debug.Log(logPrefix + "黒絵の具が当たった");
             sound.PlayOneShot(DarkSound);
             int thisBox = int.Parse(this.gameObject.transform.parent.gameObject.name.Substring(9)) - 1;
+            syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_COLOR_DARK;
             syncManager.ColorDark(thisBox);
             //testInterface.colorBoxColorChange();
             return;

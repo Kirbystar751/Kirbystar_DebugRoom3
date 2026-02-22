@@ -34,16 +34,21 @@ public class SGB_ColorSim_ColorBinController : UdonSharpBehaviour
                                             243,237,238,239,240,241};
 
     [SerializeField] public SGB_ColorSim_Core sgbCore;
+    [SerializeField] public SGB_ColorSim_SyncManager syncManager;
 
     void Start()
     {
-        ColorBinChange();
         Sound = GetComponent<AudioSource>();
+
+        ColorBinChange();
+        syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_PALLETE_CHANGE;
+        syncManager.SetColorBinIndex(ColorBinIndex);
     }
 
     public override void Interact()
     {
         NextColorBin();
+        //syncManager.SetColorBinIndex(ColorBinIndex);
         Sound.PlayOneShot(BinChangeSound);
     }
 
@@ -54,7 +59,20 @@ public class SGB_ColorSim_ColorBinController : UdonSharpBehaviour
         {
             ColorBinIndex = 0;
         }
+        syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_PALLETE_CHANGE;
+        syncManager.SetColorBinIndex(ColorBinIndex);
         ColorBinChange();
+    }
+
+    /// <summary>
+    /// 絵の具のビンの色を指定のインデックスに切り替える（ネットワーク呼び出し用）
+    /// </summary>
+    public void SetColorBin(int index)
+    {
+        Debug.Log(logPrefix + "SetColorBinが呼ばれた ColorBinIndex = " + ColorBinIndex);
+        ColorBinIndex = index;
+        ColorBinChange();
+        Sound.PlayOneShot(BinChangeSound);
     }
 
     public void ColorBinChange()

@@ -9,14 +9,58 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
 
     [SerializeField] private SGB_ColorSim_Core core;
     [SerializeField] private SGB_ColorSim_TestInterFace interfaceUI;
+    [SerializeField] private SGB_ColorSim_ColorBinController colorBinController;
 
     // 同期するパスワード
     [UdonSynced] public string syncPass;
+    // 同期する絵の具のビンのページ
+    [UdonSynced] public int syncColorBinIndex;
+
     // 何を同期したか（操作演出のために必要）
     [UdonSynced] public int syncKind;
+    #region 同期の種類
+    /// <summary>
+    /// 同期の種類：ダミー（使用禁止）
+    /// </summary>
+    public const int SYNC_KIND_PALLETE_DAMMY = 0;
+    /// <summary>
+    /// 同期の種類：絵の具のビン変更
+    /// </summary>
+    public const int SYNC_KIND_PALLETE_CHANGE = 1;
+    /// <summary>
+    /// 同期の種類：色つかむ
+    /// </summary>
+    public const int SYNC_KIND_COLOR_PICKUP = 2;
+    /// <summary>
+    /// 同期の種類：色離す
+    /// </summary>
+    public const int SYNC_KIND_COLOR_RELEASE = 3;
+    /// <summary>
+    /// 同期の種類：色をセット
+    /// </summary>
+    public const int SYNC_KIND_COLOR_SET = 4;
+    /// <summary>
+    /// 同期の種類：パスワード操作
+    /// </summary>
+    public const int SYNC_KIND_PASSWORD = 5;
+    /// <summary>
+    /// 同期の種類：色を明るくする
+    /// </summary>
+    public const int SYNC_KIND_COLOR_LIGHT = 6;
+    /// <summary>
+    /// 同期の種類：色を暗くする
+    /// </summary>
+    public const int SYNC_KIND_COLOR_DARK = 7;
+    #endregion
+
     // Pickupをどっちの手で持っているか
     [UdonSynced] public int syncHand;
 
+    // 【色セット/白黒絵の具使用時】どこの色ボックスにセットしたか
+    [UdonSynced] public int syncColorBoxIndex;
+
+    // 【パスワード操作時】どの桁を操作したか
+    [UdonSynced] public int syncPasswordIndex;
 
     /// <summary>
     /// パスワードを反映する
@@ -34,6 +78,17 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
         RequestSerialization();
 
         ApplyState(); // ローカル即時反映
+    }
+
+    public void SetColorBinIndex(int index)
+    {
+        if (!Networking.IsOwner(gameObject)) 
+        {
+            Networking.SetOwner(Networking.LocalPlayer, gameObject);
+        }
+        syncColorBinIndex = index;
+        RequestSerialization();
+        ApplyState();
     }
 
     /// <summary>
@@ -75,7 +130,25 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
     {
         Debug.Log(logPrefix + "ApplyState() syncPass = " + syncPass);
 
-        core.SetPassword(syncPass);
-        interfaceUI.colorBoxColorChange();
+        switch (syncKind)
+        {
+            case SYNC_KIND_PASSWORD:
+                Debug.Log(logPrefix + "パスワード操作の同期を反映");
+                core.SetPassword(syncPass);
+                interfaceUI.colorBoxColorChange();
+                break;
+            case SYNC_KIND_COLOR_LIGHT:
+            case SYNC_KIND_COLOR_DARK:
+                Debug.Log(logPrefix + "色の明るさ変更の同期を反映");
+                core.SetPassword(syncPass);
+                interfaceUI.colorBoxColorChange();
+                break;
+            case SYNC_KIND_PALLETE_CHANGE:
+                Debug.Log(logPrefix + "絵の具のビン変更の同期を反映");
+                colorBinController.SetColorBin(syncColorBinIndex);
+                break;
+            default:
+                break;
+        }
     }
 }

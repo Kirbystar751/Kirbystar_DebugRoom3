@@ -154,6 +154,7 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                             newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
                             //core.SGBPassword = newpass;
                             //core.SetPassword(newpass);
+                            syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_PASSWORD;
                             syncManager.SetPassword(newpass);
                             break;
                         case 2:
@@ -165,8 +166,8 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                             newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
                             //core.SGBPassword = newpass;
                             //core.SetPassword(newpass);
+                            syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_PASSWORD;
                             syncManager.SetPassword(newpass);
-
                             break;
                         case 3:
                             //最初に、ハイフンを取る
@@ -177,6 +178,7 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                             newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
                             //core.SGBPassword = newpass;
                             //core.SetPassword(newpass);
+                            syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_PASSWORD;
                             syncManager.SetPassword(newpass);
                             break;
                         case 4:
@@ -188,6 +190,7 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                             newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
                             //core.SGBPassword = newpass;
                             //core.SetPassword(newpass);
+                            syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_PASSWORD;
                             syncManager.SetPassword(newpass);
                             break;
                         default:
