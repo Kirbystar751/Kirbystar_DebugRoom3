@@ -2,6 +2,7 @@
 using UdonSharp;
 using UdonSharp.Examples.Utilities;
 using UnityEngine;
+using VRC.SDK3.UdonNetworkCalling;
 using VRC.SDKBase;
 using VRC.Udon;
 
@@ -53,6 +54,13 @@ public class SGB_ColorSim_ColorBinController : UdonSharpBehaviour
         NextColorBin();
         //syncManager.SetColorBinIndex(ColorBinIndex);
         Sound.PlayOneShot(BinChangeSound);
+        SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.Others, "InteractEvent");
+    }
+
+    [NetworkCallable]
+    public void InteractEvent()
+    {
+        Sound.PlayOneShot(BinChangeSound);
     }
 
     public void NextColorBin()
@@ -75,7 +83,7 @@ public class SGB_ColorSim_ColorBinController : UdonSharpBehaviour
         Debug.Log(logPrefix + "SetColorBinが呼ばれた ColorBinIndex = " + ColorBinIndex);
         ColorBinIndex = index;
         ColorBinChange();
-        Sound.PlayOneShot(BinChangeSound);
+        //Sound.PlayOneShot(BinChangeSound);
     }
 
     public void ColorBinChange()
