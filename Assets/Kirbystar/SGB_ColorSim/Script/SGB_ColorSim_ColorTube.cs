@@ -1,12 +1,14 @@
 ﻿
 using UdonSharp;
 using UnityEngine;
+using VRC.SDK3.UdonNetworkCalling;
 using VRC.SDKBase;
 using VRC.Udon;
 
 public class SGB_ColorSim_ColorTube : UdonSharpBehaviour
 {
     [SerializeField] public ParticleSystem Paintparticle;
+    [SerializeField] public ParticleSystem DummyParticle;
     Animator animator;
     void Start()
     {
@@ -17,5 +19,13 @@ public class SGB_ColorSim_ColorTube : UdonSharpBehaviour
     {
         Paintparticle.Play();
         animator.Play("PaintTube_Sibori");
+        SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.Others, "PickupUseEvent");
+    }
+
+    [NetworkCallable]
+    public void PickupUseEvent()
+    {
+         DummyParticle.Play();
+         animator.Play("PaintTube_Sibori");
     }
 }

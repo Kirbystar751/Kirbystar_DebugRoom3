@@ -17,6 +17,7 @@ public class SGB_ColorSim_PasswordInputter : UdonSharpBehaviour
     [SerializeField] public SGB_ColorSim_Core core;
     [SerializeField] public SGB_ColorSim_TestInterFace interFace;
     [SerializeField] public AudioClip interactSound;
+    [SerializeField]SGB_ColorSim_SyncManager syncManager;
     AudioSource Sound;
     Text charDisp;
 
@@ -46,7 +47,11 @@ public class SGB_ColorSim_PasswordInputter : UdonSharpBehaviour
             int currentNum = int.Parse(currentPass.Substring(interactedObj, 1));
             int nextNum = (currentNum + 1) % 10;
             currentPass = currentPass.Remove(interactedObj, 1).Insert(interactedObj, nextNum.ToString());
-            core.SGBPassword = currentPass;
+            //core.SGBPassword = currentPass;
+            //core.SetPassword(currentPass);
+            syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_PASSWORD;
+            syncManager.SetPassword(currentPass);
+
             interFace.colorBoxColorChange();
         }
     }

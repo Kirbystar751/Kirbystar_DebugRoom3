@@ -19,6 +19,7 @@ public class SGB_ColorSim_ColorBox : UdonSharpBehaviour
     [SerializeField] public SGB_ColorSim_TestInterFace testInterface;
     [SerializeField] public GameObject lightParticle;
     [SerializeField] public GameObject darkParticle;
+    [SerializeField]SGB_ColorSim_SyncManager syncManager;
 
     int const_colorLight = 1;
     int const_colorDark = 2;
@@ -49,8 +50,9 @@ public class SGB_ColorSim_ColorBox : UdonSharpBehaviour
             Debug.Log(logPrefix + "白絵の具が当たった");
             sound.PlayOneShot(LightSound);
             int thisBox = int.Parse(this.gameObject.transform.parent.gameObject.name.Substring(9)) - 1;
-            core.ColorLight(thisBox);
-            testInterface.colorBoxColorChange();
+            syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_COLOR_LIGHT;
+            syncManager.ColorLight(thisBox);
+            //testInterface.colorBoxColorChange();
             return;
         }
         if(hitParticleName == darkParticle.name)
@@ -58,8 +60,9 @@ public class SGB_ColorSim_ColorBox : UdonSharpBehaviour
             Debug.Log(logPrefix + "黒絵の具が当たった");
             sound.PlayOneShot(DarkSound);
             int thisBox = int.Parse(this.gameObject.transform.parent.gameObject.name.Substring(9)) - 1;
-            core.ColorDark(thisBox);
-            testInterface.colorBoxColorChange();
+            syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_COLOR_DARK;
+            syncManager.ColorDark(thisBox);
+            //testInterface.colorBoxColorChange();
             return;
         }
     }

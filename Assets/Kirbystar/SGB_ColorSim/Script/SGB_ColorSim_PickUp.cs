@@ -17,7 +17,7 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
     [SerializeField]SGB_ColorSim_Core core;
     [SerializeField] ParticleSystem particle;
     [SerializeField]SGB_ColorSim_TestInterFace testInterface;
-    
+    [SerializeField]SGB_ColorSim_SyncManager syncManager;
     [SerializeField] AudioClip grabSound;
     [SerializeField] AudioClip releaseSound;
     [SerializeField] AudioClip setSound;
@@ -33,6 +33,10 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
     bool isGrab = false;
     int colorCode;
     bool isInColorBox = false;
+
+    //つかんだ当初のカラーコードと色（この情報を使って更新する）
+    int grab_ColorCode;
+    Color grab_Color;
 
     void Start()
     {
@@ -65,13 +69,6 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
     public void palleteColorChange()
     {
         Debug.Log(logPrefix + "パレットの色変更がかかった");
-        Color c = parent.binColor;
-        colorCode = parent.binColorCode;
-        GetComponent<MeshRenderer>().material.color = c;
-        Debug.Log(logPrefix + this.gameObject.name + "の色は" + c + "、Code:" + colorCode);
-
-        ParticleSystem.MainModule main = particle.main;
-        main.startColor = c;
     }
     /// <summary>
     /// つかまれた時に発生
@@ -81,6 +78,17 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
         Debug.Log(logPrefix + "つかみました");
         this.GetComponent<MeshRenderer>().enabled = true;
         sound.PlayOneShot(grabSound);
+        //もう片手でつかめないようにする
+        this.GetComponent<VRC_Pickup>().pickupable = false;
+
+        //つかんだ時の色を反映
+        Color c = parent.binColor;
+        colorCode = parent.binColorCode;
+        GetComponent<MeshRenderer>().material.color = c;
+        Debug.Log(logPrefix + this.gameObject.name + "の色は" + c + "、Code:" + colorCode);
+
+        ParticleSystem.MainModule main = particle.main;
+        main.startColor = c;
     }
     /// <summary>
     /// 離したときに発生
@@ -98,6 +106,8 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
             this.GetComponent<MeshRenderer>().enabled = false;
             this.gameObject.transform.position = initialPos;
             this.gameObject.transform.rotation = initialRot;
+            //つかめる状態を戻す
+            this.GetComponent<VRC_Pickup>().pickupable = true;
         }
     }
 
@@ -142,7 +152,10 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                             rawpass = rawpass.Remove(0, 3).Insert(0, colorCode.ToString("D3"));
                             //またハイフンを入れる
                             newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
-                            core.SGBPassword = newpass;
+                            //core.SGBPassword = newpass;
+                            //core.SetPassword(newpass);
+                            syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_PASSWORD;
+                            syncManager.SetPassword(newpass);
                             break;
                         case 2:
                             //最初に、ハイフンを取る
@@ -151,7 +164,10 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                             rawpass = rawpass.Remove(3, 3).Insert(3, colorCode.ToString("D3"));
                             //またハイフンを入れる
                             newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
-                            core.SGBPassword = newpass;
+                            //core.SGBPassword = newpass;
+                            //core.SetPassword(newpass);
+                            syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_PASSWORD;
+                            syncManager.SetPassword(newpass);
                             break;
                         case 3:
                             //最初に、ハイフンを取る
@@ -160,7 +176,10 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                             rawpass = rawpass.Remove(6, 3).Insert(6, colorCode.ToString("D3"));
                             //またハイフンを入れる
                             newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
-                            core.SGBPassword = newpass;
+                            //core.SGBPassword = newpass;
+                            //core.SetPassword(newpass);
+                            syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_PASSWORD;
+                            syncManager.SetPassword(newpass);
                             break;
                         case 4:
                             //最初に、ハイフンを取る
@@ -169,7 +188,10 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                             rawpass = rawpass.Remove(9, 3).Insert(9, colorCode.ToString("D3"));
                             //またハイフンを入れる
                             newpass = rawpass.Substring(0, 4) + "-" + rawpass.Substring(4, 4) + "-" + rawpass.Substring(8, 4);
-                            core.SGBPassword = newpass;
+                            //core.SGBPassword = newpass;
+                            //core.SetPassword(newpass);
+                            syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_PASSWORD;
+                            syncManager.SetPassword(newpass);
                             break;
                         default:
                             break;
@@ -185,7 +207,9 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                     this.GetComponent<MeshRenderer>().enabled = false;
                     this.gameObject.transform.position = initialPos;
                     this.gameObject.transform.rotation = initialRot;
-                    isInColorBox = false; 
+                    isInColorBox = false;
+                    //つかめる状態を戻す
+                    this.GetComponent<VRC_Pickup>().pickupable = true;
                 }
             }
         }
