@@ -21,6 +21,7 @@ public class SGB_ColorSim_TestInterFace : UdonSharpBehaviour
 
     [SerializeField] public SGB_ColorSim_Core core;
     [SerializeField] public GameObject[] colorBoxs = new GameObject[4];
+    [SerializeField] public GameObject[] GBScreens = new GameObject[4];
     [SerializeField] public GameObject passwordDisp;
     [SerializeField] public GameObject[] passInputterText = new GameObject[14];
 
@@ -45,6 +46,7 @@ public class SGB_ColorSim_TestInterFace : UdonSharpBehaviour
             if(TryParseHexColor(colors[i], out Color color))
             {
                 colorBoxs[i].GetComponent<Renderer>().material.color = color;
+                GBScreens[i].GetComponent<Renderer>().material.color = color;
             }
         }
     }
@@ -62,6 +64,7 @@ public class SGB_ColorSim_TestInterFace : UdonSharpBehaviour
             if (TryParseHexColor(colors[i], out Color color))
             {
                 colorBoxs[i].GetComponent<Renderer>().material.color = color;
+                GBScreens[i].GetComponent<Renderer>().material.color = color;
             }
         }
         passDispText.text = core.SGBPassword;

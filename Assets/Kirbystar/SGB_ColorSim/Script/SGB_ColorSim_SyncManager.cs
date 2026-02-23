@@ -146,6 +146,7 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
             case SYNC_KIND_PALLETE_CHANGE:
                 Debug.Log(logPrefix + "絵の具のビン変更の同期を反映");
                 colorBinController.SetColorBin(syncColorBinIndex);
+                colorBinController.palAnim.SetInteger("PalNum", syncColorBinIndex);
                 break;
             default:
                 break;

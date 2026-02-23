@@ -36,9 +36,12 @@ public class SGB_ColorSim_ColorBinController : UdonSharpBehaviour
     [SerializeField] public SGB_ColorSim_Core sgbCore;
     [SerializeField] public SGB_ColorSim_SyncManager syncManager;
 
+    public Animator palAnim;
+
     void Start()
     {
         Sound = GetComponent<AudioSource>();
+        palAnim = GetComponent<Animator>();
 
         ColorBinChange();
         syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_PALLETE_CHANGE;
