@@ -2,6 +2,7 @@
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
+using VRC.SDK3.UdonNetworkCalling;
 using VRC.SDKBase;
 using VRC.Udon;
 
@@ -26,6 +27,13 @@ public class SGB_ColorSim_PasswordInputter : UdonSharpBehaviour
         charDisp = CharDisplayObject.GetComponent<Text>();
         Sound = GetComponent<AudioSource>();
         charDisp.text = core.SGBPassword.Substring(int.Parse(gameObject.name), 1);
+    }
+
+    [NetworkCallable]
+    public void InteractEvent()
+    {
+        //charDisp.text = core.SGBPassword.Substring(int.Parse(gameObject.name), 1);
+        Sound.PlayOneShot(interactSound);
     }
 
     public override void Interact()
@@ -53,6 +61,7 @@ public class SGB_ColorSim_PasswordInputter : UdonSharpBehaviour
             syncManager.SetPassword(currentPass);
 
             interFace.colorBoxColorChange();
+            SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.Others, "InteractEvent");
         }
     }
 }

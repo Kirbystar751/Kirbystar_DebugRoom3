@@ -44,9 +44,10 @@ public class SGB_ColorSim_ColorBinController : UdonSharpBehaviour
         Sound = GetComponent<AudioSource>();
         palAnim = GetComponent<Animator>();
 
+        //変数が変わったことが通知されると勝手に同期されるからStart()内で同期変数はいじらない
         ColorBinChange();
-        syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_PALLETE_CHANGE;
-        syncManager.SetColorBinIndex(ColorBinIndex);
+        //syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_PALLETE_CHANGE;
+        //syncManager.SetColorBinIndex(ColorBinIndex);
     }
 
     public override void Interact()

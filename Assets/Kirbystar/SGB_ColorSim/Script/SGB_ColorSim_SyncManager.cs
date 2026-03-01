@@ -16,8 +16,6 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
     // 同期する絵の具のビンのページ
     [UdonSynced] public int syncColorBinIndex;
 
-    // 何を同期したか（操作演出のために必要）
-    [UdonSynced] public int syncKind;
     #region 同期の種類
     /// <summary>
     /// 同期の種類：ダミー（使用禁止）
@@ -51,7 +49,15 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
     /// 同期の種類：色を暗くする
     /// </summary>
     public const int SYNC_KIND_COLOR_DARK = 7;
+
+    /// <summary>
+    /// 同期の種類：全部同期する（あとから来た人向け）
+    /// </summary>
+    public const int SYNC_KIND_ALL = 255;
     #endregion
+
+    // 何を同期したか（操作演出のために必要）
+    [UdonSynced] public int syncKind = SYNC_KIND_ALL;
 
     // Pickupをどっちの手で持っているか
     [UdonSynced] public int syncHand;
@@ -129,7 +135,15 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
     private void ApplyState()
     {
         Debug.Log(logPrefix + "ApplyState() syncPass = " + syncPass);
-
+        if (!Networking.IsOwner(gameObject))
+        {
+            Debug.Log(logPrefix + "全部の同期内容を反映");
+            core.SetPassword(syncPass);
+            interfaceUI.colorBoxColorChange();
+            colorBinController.SetColorBin(syncColorBinIndex);
+            colorBinController.palAnim.SetInteger("PalNum", syncColorBinIndex);
+            return;
+        }
         switch (syncKind)
         {
             case SYNC_KIND_PASSWORD:
@@ -145,6 +159,13 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
                 break;
             case SYNC_KIND_PALLETE_CHANGE:
                 Debug.Log(logPrefix + "絵の具のビン変更の同期を反映");
+                colorBinController.SetColorBin(syncColorBinIndex);
+                colorBinController.palAnim.SetInteger("PalNum", syncColorBinIndex);
+                break;
+            case SYNC_KIND_ALL:
+                Debug.Log(logPrefix + "全部の同期内容を反映");
+                core.SetPassword(syncPass);
+                interfaceUI.colorBoxColorChange();
                 colorBinController.SetColorBin(syncColorBinIndex);
                 colorBinController.palAnim.SetInteger("PalNum", syncColorBinIndex);
                 break;

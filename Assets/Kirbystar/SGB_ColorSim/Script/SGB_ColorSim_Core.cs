@@ -694,6 +694,7 @@ public class SGB_ColorSim_Core : UdonSharpBehaviour
     {
         //SyncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_PASSWORD;
         //SyncManager.SetPassword(SGBPassword);
+        SetPassword(SGBPassword);
     }
 
     public void ev_Pass2Color()

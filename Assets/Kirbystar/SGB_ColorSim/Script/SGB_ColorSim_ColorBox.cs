@@ -1,6 +1,7 @@
 ﻿
 using UdonSharp;
 using UnityEngine;
+using VRC.SDK3.UdonNetworkCalling;
 using VRC.SDKBase;
 using VRC.Udon;
 using static VRC.SDK3.Dynamics.PhysBone.PhysBoneMigration.DynamicBoneColliderData;
@@ -30,6 +31,18 @@ public class SGB_ColorSim_ColorBox : UdonSharpBehaviour
         sound = GetComponent<AudioSource>();
     }
 
+    [NetworkCallable]
+    public void ColorDarkEvent()
+    {
+        sound.PlayOneShot(DarkSound);
+    }
+
+    [NetworkCallable]
+    public void ColorLightEvent()
+    {
+        sound.PlayOneShot(LightSound);
+    }
+
     /// <summary>
     /// パーティクルが当たったときの処理
     /// </summary>
@@ -53,6 +66,7 @@ public class SGB_ColorSim_ColorBox : UdonSharpBehaviour
             syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_COLOR_LIGHT;
             syncManager.ColorLight(thisBox);
             //testInterface.colorBoxColorChange();
+            SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.Others, "ColorLightEvent");
             return;
         }
         if(hitParticleName == darkParticle.name)
@@ -63,6 +77,7 @@ public class SGB_ColorSim_ColorBox : UdonSharpBehaviour
             syncManager.syncKind = SGB_ColorSim_SyncManager.SYNC_KIND_COLOR_DARK;
             syncManager.ColorDark(thisBox);
             //testInterface.colorBoxColorChange();
+            SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.Others, "ColorDarkEvent");
             return;
         }
     }

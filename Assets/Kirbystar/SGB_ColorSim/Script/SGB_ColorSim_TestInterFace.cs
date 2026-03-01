@@ -30,7 +30,8 @@ public class SGB_ColorSim_TestInterFace : UdonSharpBehaviour
     void Start()
     {
         passDispText = passwordDisp.GetComponent<Text>();
-        //colorBoxColorChange();
+        colorBoxColorChange();
+        //変数が変わったことが通知されると勝手に同期されるからStart()内で同期変数はいじらない
     }
 
     public void testButtonPress()
