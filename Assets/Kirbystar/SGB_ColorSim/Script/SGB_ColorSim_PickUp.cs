@@ -1,6 +1,8 @@
 ﻿
 using UdonSharp;
 using UnityEngine;
+using VRC.SDK3.ClientSim;
+using VRC.SDK3.UdonNetworkCalling;
 using VRC.SDKBase;
 using VRC.Udon;
 
@@ -27,6 +29,21 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
     Vector3 initialPos;
     Quaternion initialRot;
 
+    //誰が持っているか
+    private VRCPlayerApi grabPlayer;
+    [UdonSynced] private int grabPlayerId;
+    // Pickupをどっちの手で持っているか
+    [UdonSynced] public int syncHand;
+    const int HAND_LEFT = 0b01;
+    const int HAND_RIGHT = 0b10;
+
+    //どの色を持っているか
+    [UdonSynced] public int syncColor;
+    [UdonSynced] public Color syncColorC;
+    //同期相手に見せるつかみ用オブジェクト
+    [SerializeField] GameObject syncPickupDmyObj;
+    //インスタンス化されたやつ
+    GameObject _syncPickupDmyObj;
 
     int initDelayTimer = 0;
     bool isInitDelay = false;
@@ -58,6 +75,24 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        // 他人の画面であり、かつダミーが存在する場合のみ実行
+        if (!Networking.IsOwner(gameObject) && _syncPickupDmyObj != null && grabPlayer != null)
+        {
+            // ターゲットの手を決定
+            VRCPlayerApi.TrackingDataType targetHand = (syncHand == HAND_LEFT)
+                ? VRCPlayerApi.TrackingDataType.LeftHand
+                : VRCPlayerApi.TrackingDataType.RightHand;
+
+            // 持っているプレイヤーの手の情報を取得
+            VRCPlayerApi.TrackingData handData = grabPlayer.GetTrackingData(targetHand);
+
+            // ダミーを追従させる
+            _syncPickupDmyObj.transform.position = handData.position;
+            _syncPickupDmyObj.transform.rotation = handData.rotation;
+        }
+    }
     void delay_Start()
     {
         Debug.Log(logPrefix + "初期処理の遅延実行をした");
@@ -84,17 +119,87 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
         //つかんだ時の色を反映
         Color c = parent.binColor;
         colorCode = parent.binColorCode;
+        syncColorC = c;
         GetComponent<MeshRenderer>().material.color = c;
         Debug.Log(logPrefix + this.gameObject.name + "の色は" + c + "、Code:" + colorCode);
-
         ParticleSystem.MainModule main = particle.main;
         main.startColor = c;
+
+        //相手にもつかんだことを知らせる処理をいれる
+        grabPlayer = Networking.LocalPlayer;
+        grabPlayerId = grabPlayer.playerId;
+        VRC_Pickup pickup = (VRC_Pickup)this.GetComponent(typeof(VRC_Pickup));
+        syncColor = colorCode;
+        SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.Others, "GrabEvent");
+
+        //持ち手を判定する
+        if (grabPlayer != null)
+        {
+            Vector3 lp = grabPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.LeftHand).position;
+            Vector3 rp = grabPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.RightHand).position;
+            if(Vector3.Distance(transform.position, lp) < Vector3.Distance(transform.position, rp))
+            {
+                syncHand = HAND_LEFT;
+                Debug.Log(logPrefix + "左手で持ちました");
+            }
+            else
+            {
+                syncHand = HAND_RIGHT;
+                Debug.Log(logPrefix + "右手で持ちました");
+            }
+            RequestSerialization();
+        }
     }
+
+    public override void OnDeserialization()
+    {
+        //自分が操作したなら何もしない
+        if (Networking.IsOwner(gameObject)) { return; }
+        //IDからプレイヤーを特定
+        if (grabPlayerId != -1)
+        {
+            grabPlayer = VRCPlayerApi.GetPlayerById(grabPlayerId);
+        }
+        else
+        {
+            grabPlayer = null;
+        }
+        //誰かが持っているか
+        bool isGrabOther = (syncHand !=0 && grabPlayer != null);
+        if (isGrabOther)
+        {
+            //ダミーがないなら生成
+            if(_syncPickupDmyObj == null && syncPickupDmyObj != null)
+            {
+                _syncPickupDmyObj = Instantiate(syncPickupDmyObj);
+                //色などを反映
+                MeshRenderer dmyRender = _syncPickupDmyObj.GetComponent<MeshRenderer>();
+                if (dmyRender != null)
+                {
+                    dmyRender.enabled = true;
+                    dmyRender.material.color = syncColorC;
+                }
+            }
+        }else
+        {
+            //手放されたのでダミーがあれば消す
+            if (_syncPickupDmyObj != null)
+            {
+                Destroy(_syncPickupDmyObj);
+                _syncPickupDmyObj = null;
+            }
+        }
+    }
+
     /// <summary>
     /// 離したときに発生
     /// </summary>
     public override void OnDrop()
     {
+        grabPlayer = null;
+        syncHand = 0;
+        grabPlayerId = -1;
+        RequestSerialization();
         //色ボックスに触れずに手放したときだけ
         if (!isInColorBox)
         {
@@ -108,9 +213,29 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
             this.gameObject.transform.rotation = initialRot;
             //つかめる状態を戻す
             this.GetComponent<VRC_Pickup>().pickupable = true;
+            SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.Others, "DropEvent");
         }
     }
 
+    /// <summary>
+    /// 相手が色をセットしたときに発生するイベント
+    /// </summary>
+    [NetworkCallable]
+    public void ColorSetEvent()
+    {
+        sound.PlayOneShot(setSound);
+    }
+    //相手が色をつかんだ時に起きるイベント
+    [NetworkCallable]
+    public void GrabEvent()
+    {
+        sound.PlayOneShot(grabSound);
+    }
+    [NetworkCallable]
+    public void DropEvent()
+    {
+        sound.PlayOneShot(releaseSound);
+    }
     /// <summary>
     /// コライダーと当たったときに発生
     /// </summary>
@@ -204,6 +329,8 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
                     VRC_Pickup pickup = (VRC_Pickup)this.GetComponent(typeof(VRC_Pickup));
                     pickup.Drop(); 
                     sound.PlayOneShot(setSound);
+                    //相手にもセットサウンドを鳴らす処理をいれる
+                    SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.Others, "ColorSetEvent");
                     this.GetComponent<MeshRenderer>().enabled = false;
                     this.gameObject.transform.position = initialPos;
                     this.gameObject.transform.rotation = initialRot;

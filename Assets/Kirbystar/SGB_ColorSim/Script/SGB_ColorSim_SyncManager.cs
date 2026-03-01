@@ -59,6 +59,8 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
     // 何を同期したか（操作演出のために必要）
     [UdonSynced] public int syncKind = SYNC_KIND_ALL;
 
+
+    //もしかしたらこの辺の情報はPickupで同期したほうがいいのかな
     // Pickupをどっちの手で持っているか
     [UdonSynced] public int syncHand;
 
