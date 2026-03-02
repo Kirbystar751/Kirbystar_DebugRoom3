@@ -171,7 +171,7 @@ public class SGB_ColorSim_PickUp : UdonSharpBehaviour
             //ダミーがないなら生成
             if(_syncPickupDmyObj == null && syncPickupDmyObj != null)
             {
-                _syncPickupDmyObj = Instantiate(syncPickupDmyObj);
+                _syncPickupDmyObj = Instantiate(syncPickupDmyObj,this.gameObject.transform.parent.transform,false);
                 //色などを反映
                 MeshRenderer dmyRender = _syncPickupDmyObj.GetComponent<MeshRenderer>();
                 if (dmyRender != null)
