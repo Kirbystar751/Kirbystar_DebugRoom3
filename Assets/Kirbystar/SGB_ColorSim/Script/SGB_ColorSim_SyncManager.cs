@@ -10,11 +10,14 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
     [SerializeField] private SGB_ColorSim_Core core;
     [SerializeField] private SGB_ColorSim_TestInterFace interfaceUI;
     [SerializeField] private SGB_ColorSim_ColorBinController colorBinController;
+    [SerializeField] private SGB_ColorSim_IllustButton illustButton;
 
     // 同期するパスワード
     [UdonSynced] public string syncPass;
     // 同期する絵の具のビンのページ
     [UdonSynced] public int syncColorBinIndex;
+    // 同期するイラストのインデックス
+    [UdonSynced] public int syncIllustIndex;
 
     #region 同期の種類
     /// <summary>
@@ -49,7 +52,10 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
     /// 同期の種類：色を暗くする
     /// </summary>
     public const int SYNC_KIND_COLOR_DARK = 7;
-
+    /// <summary>
+    /// 同期の種類：イラスト変更
+    /// </summary>
+    public const int SYNC_KIND_ILLUST_CHANGE = 8;
     /// <summary>
     /// 同期の種類：全部同期する（あとから来た人向け）
     /// </summary>
@@ -103,6 +109,10 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
         ApplyState(); // ローカル即時反映
     }
 
+    /// <summary>
+    /// 絵の具のビンのページを設定する
+    /// </summary>
+    /// <param name="index"></param>
     public void SetColorBinIndex(int index)
     {
         if (!Networking.IsOwner(gameObject)) 
@@ -110,6 +120,18 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
             Networking.SetOwner(Networking.LocalPlayer, gameObject);
         }
         syncColorBinIndex = index;
+        RequestSerialization();
+        ApplyState();
+    }
+
+
+    public void SetIllustIndex(int index)
+    {
+        if (!Networking.IsOwner(gameObject)) 
+        {
+            Networking.SetOwner(Networking.LocalPlayer, gameObject);
+        }
+        syncIllustIndex = index;
         RequestSerialization();
         ApplyState();
     }
@@ -166,7 +188,9 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
             core.SetPassword(syncPass);
             interfaceUI.colorBoxColorChange();
             colorBinController.SetColorBin(syncColorBinIndex);
+            illustButton.SetIllust(syncIllustIndex);
             colorBinController.palAnim.SetInteger("PalNum", syncColorBinIndex);
+
             return;
         }
         switch (syncKind)
@@ -187,11 +211,16 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
                 colorBinController.SetColorBin(syncColorBinIndex);
                 colorBinController.palAnim.SetInteger("PalNum", syncColorBinIndex);
                 break;
+            case SYNC_KIND_ILLUST_CHANGE:
+                Debug.Log(logPrefix + "イラスト変更の同期を反映");
+                illustButton.SetIllust(syncIllustIndex);
+                break;
             case SYNC_KIND_ALL:
                 Debug.Log(logPrefix + "全部の同期内容を反映");
                 core.SetPassword(syncPass);
                 interfaceUI.colorBoxColorChange();
                 colorBinController.SetColorBin(syncColorBinIndex);
+                illustButton.SetIllust(syncIllustIndex);
                 colorBinController.palAnim.SetInteger("PalNum", syncColorBinIndex);
                 break;
             default:
