@@ -70,6 +70,21 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
     // 【パスワード操作時】どの桁を操作したか
     [UdonSynced] public int syncPasswordIndex;
 
+    public void Start()
+    {
+        //同期変数が空なら
+        if (syncPass == "")
+        {
+            if(!Networking.IsOwner(gameObject))
+            {
+                Networking.SetOwner(Networking.LocalPlayer, gameObject);
+            }
+            syncPass = core.SGBPassword;
+            RequestSerialization();
+            ApplyState();
+        }
+    }
+
     /// <summary>
     /// パスワードを反映する
     /// </summary>
