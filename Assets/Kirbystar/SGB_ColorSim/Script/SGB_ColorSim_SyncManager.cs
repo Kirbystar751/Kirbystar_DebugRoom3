@@ -59,6 +59,8 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
     // 何を同期したか（操作演出のために必要）
     [UdonSynced] public int syncKind = SYNC_KIND_ALL;
 
+
+    //もしかしたらこの辺の情報はPickupで同期したほうがいいのかな
     // Pickupをどっちの手で持っているか
     [UdonSynced] public int syncHand;
 
@@ -104,6 +106,10 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
     public void ColorLight(int index)
     {
         core.ColorLight(index);
+        if (!Networking.IsOwner(gameObject))
+        {
+            Networking.SetOwner(Networking.LocalPlayer, gameObject);
+        }
         syncPass = core.SGBPassword;
         RequestSerialization();
         ApplyState();
@@ -116,6 +122,10 @@ public class SGB_ColorSim_SyncManager : UdonSharpBehaviour
     public void ColorDark(int index)
     {
         core.ColorDark(index);
+        if (!Networking.IsOwner(gameObject))
+        {
+            Networking.SetOwner(Networking.LocalPlayer, gameObject);
+        }
         syncPass = core.SGBPassword;
         RequestSerialization();
         ApplyState();
